@@ -1,5 +1,6 @@
 library(shiny)
 library(tidyverse)
+library(ggridges)
 
 ui <- fluidPage(
    
@@ -9,7 +10,7 @@ ui <- fluidPage(
    # Sidebar with a slider input for number of bins 
    sidebarLayout(
       sidebarPanel(
-        withMathJax("This is a simulation which shows: $$\\chi^2_k = Y^2_1 + Y^2_2 \\dots + Y^2_k,$$ with Y ∼ N(0, 1), k --- degrees of freedom"),
+        withMathJax("This is a simulation which shows: $$\\chi^2_k = Y^2_1 + Y^2_2 \\dots + Y^2_k,$$ with Y ~ N(0, 1), k — degrees of freedom"),
          sliderInput("df",
                      "Change number of samples / degrees of freedom:",
                      min = 1,
@@ -57,10 +58,15 @@ server <- function(input, output) {
                             levels = c("Υ ∼ N(0, 1)",
                                        "∑Υ²",
                                        paste("χ², df =", input$df)))) %>% 
-       ggplot(aes(value, fill = factor(id)))+
-       geom_density(show.legend = FALSE, alpha = 0.2)+
+       ggplot(aes(value, id, fill = factor(id)))+
+       geom_density_ridges(show.legend = FALSE, alpha = 0.6)+
        facet_wrap(~type, scales = "free")+
-       theme_bw()
+       theme_bw()+
+       ylab("")+
+       theme(axis.text.y=element_blank(),
+             axis.ticks.y = element_blank(),
+             strip.text = element_text(size=15))+
+       scale_fill_hue(l=40)
    })
 }
 
